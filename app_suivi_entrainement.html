@@ -1,0 +1,1536 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi Entraînement - Recomposition Corporelle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+            font-size: 0.95em;
+        }
+
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .jour-title {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .jour-subtitle {
+            color: #999;
+            font-size: 0.95em;
+            margin-bottom: 30px;
+        }
+
+        .exercice-card {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .exercice-card:hover {
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        .exercice-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .exercice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .param-box {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .param-label {
+            font-size: 0.85em;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .param-value {
+            font-size: 1.3em;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .notes-section {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .tempo-visual {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .tempo-phase {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .phase-excentrique { background: #e74c3c; }
+        .phase-pause-basse { background: #f39c12; }
+        .phase-concentrique { background: #27ae60; }
+        .phase-pause-haute { background: #3498db; }
+
+        .rpe-scale {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .rpe-bar {
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(90deg, #d4edda 0%, #ffeaa7 50%, #ffcccc 100%);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .nutrition-section {
+            background: #e8f4f8;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .nutrition-title {
+            color: #2980b9;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .nutrition-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2980b9;
+            text-align: center;
+        }
+
+        .nutrition-label {
+            font-size: 0.9em;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .nutrition-value {
+            font-size: 1.8em;
+            color: #2980b9;
+            font-weight: 700;
+        }
+
+        .carb-cycle-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .carb-cycle-table th {
+            background: #2980b9;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .carb-cycle-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .carb-cycle-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .carb-high {
+            background: #fffacd;
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .carb-medium {
+            background: #fff3cd;
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .carb-low {
+            background: #e7f3f5;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .tracker-section {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .workout-log {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .input-group button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .input-group button:hover {
+            background: #5568d3;
+        }
+
+        .tips-section {
+            background: #f0f7ff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+
+        .tips-title {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+
+        .tips-section ul {
+            margin-left: 20px;
+            color: #333;
+        }
+
+        .tips-section li {
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .badge.groupe {
+            background: #27ae60;
+        }
+
+        .badge.solo {
+            background: #e74c3c;
+        }
+
+        .container-footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab-btn {
+                min-width: 80px;
+                padding: 10px;
+                font-size: 0.85em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .exercice-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nutrition-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💪 Suivi Entraînement - Recomposition Corporelle</h1>
+            <p>Programme 5 jours Delavier/Gundill - Hypertrophie + Perte de Gras</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'lundi')">🔴 Lundi PUSH</button>
+            <button class="tab-btn" onclick="openTab(event, 'mardi')">🔵 Mardi PULL</button>
+            <button class="tab-btn" onclick="openTab(event, 'mercredi')">🟡 Mercredi BRAS</button>
+            <button class="tab-btn" onclick="openTab(event, 'jeudi')">🟢 Jeudi LEGS</button>
+            <button class="tab-btn" onclick="openTab(event, 'vendredi')">🟠 Vendredi SCULPT</button>
+            <button class="tab-btn" onclick="openTab(event, 'nutrition')">🥗 Nutrition</button>
+            <button class="tab-btn" onclick="openTab(event, 'tips')">📚 Guide</button>
+        </div>
+
+        <div class="content">
+            <!-- LUNDI -->
+            <div id="lundi" class="tab-content active">
+                <div class="jour-title">🔴 Lundi - PUSH Force/Base</div>
+                <div class="jour-subtitle">Avec collègues - Pecs, Épaules, Triceps</div>
+                <span class="badge groupe">GROUPE</span>
+
+                <!-- Exercice 1 -->
+                <div class="exercice-card">
+                    <div class="exercice-name">1️⃣ Développé couché barre</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand pectoral sternal, Deltoïde ant., Triceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 5-6</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">8-9/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-1-2-0 :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">1s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">0s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ Notes Morpho-Anatomiques :</strong><br>
+                        Ne jamais verrouiller les coudes en haut. Si longiligne : passer aux haltères. Descente guidée à hauteur des mamelons.
+                    </div>
+                </div>
+
+                <!-- Exercice 2 -->
+                <div class="exercice-card">
+                    <div class="exercice-name">2️⃣ Développé militaire barre debout</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Deltoïde ant. + médial, Trapèze</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 6-8</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">8/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-0-2-0 :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">0s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">0s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ Notes Morpho-Anatomiques :</strong><br>
+                        Barre devant, jamais derrière la nuque (stress cervical). Coudes légèrement en avant du tronc.
+                    </div>
+                </div>
+
+                <!-- Exercice 3 -->
+                <div class="exercice-card">
+                    <div class="exercice-name">3️⃣ Développé incliné haltères 30°</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Faisceau claviculaire pec, Chef long triceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 8-10</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-1-2-0 :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">1s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">0s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ Notes Morpho-Anatomiques :</strong><br>
+                        30° = angle optimal. Descente profonde = étirement faisceau claviculaire maximal.
+                    </div>
+                </div>
+
+                <!-- Exercice 4 -->
+                <div class="exercice-card">
+                    <div class="exercice-name">4️⃣ Écarté câbles croisés bas</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand pectoral sternal</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-1-2-1 :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">1s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">1s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ Notes Morpho-Anatomiques :</strong><br>
+                        Câbles > haltères : tension constante en position étirée ET contractée. Légère flexion du coude fixe.
+                    </div>
+                </div>
+
+                <!-- Exercice 5 -->
+                <div class="exercice-card">
+                    <div class="exercice-name">5️⃣ Extension triceps poulie corde + <span style="color: #e74c3c;">SÉRIE DÉGRESSIVE</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Longue + Chef latéral triceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-0-2-1 :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">0s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">1s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ Technique d'Intensification :</strong><br>
+                        Écarter la corde en bas = activation chef latéral. DROP SET : -20% charge, 6-8 reps en plus sur la dernière série.
+                    </div>
+                </div>
+
+                <!-- Exercice 6 -->
+                <div class="exercice-card">
+                    <div class="exercice-name">6️⃣ Dips lestés</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Chef long + médial triceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 8-10</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">8/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-1-2-0 :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">1s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">0s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ Notes Morpho-Anatomiques :</strong><br>
+                        Ne pas descendre en dessous de 90° si épaules fragiles. Tronc vertical = focus triceps total.
+                    </div>
+                </div>
+
+                <div class="tracker-section">
+                    <h3>📊 Suivi de Séance - Lundi</h3>
+                    <div class="workout-log">
+                        <div class="input-group">
+                            <input type="date" id="date-lundi" placeholder="Date">
+                            <input type="text" placeholder="Charge DC (kg)">
+                            <input type="text" placeholder="Notes personnelles">
+                            <button onclick="alert('✅ Séance enregistrée!')">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MARDI -->
+            <div id="mardi" class="tab-content">
+                <div class="jour-title">🔵 Mardi - PULL Force/Base</div>
+                <div class="jour-subtitle">Avec collègues - Dos, Biceps</div>
+                <span class="badge groupe">GROUPE</span>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">1️⃣ Tractions lestées prise large pronation</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand dorsal (largeur)</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 5-6</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">8-9/10</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <strong>🏆 Points Clés :</strong><br>
+                        Descente COMPLÈTE bras tendus = étirement complet du grand dorsal. Initier avec les coudes, pas les mains.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">2️⃣ Rowing barre Yates</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Rhomboïdes, Grand dorsal (épaisseur)</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 6-8</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">8-9/10</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <strong>🏆 Points Clés :</strong><br>
+                        Barre tirée vers le bas du nombril, coudes le long du corps. Contraction 1 sec en haut. Tirer avec les coudes = activation dos > biceps.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">3️⃣ Tirage vertical poulie (prise supination)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand dorsal + Biceps chef long</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 10-12</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">4️⃣ Curl barre EZ debout</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Biceps brachial + Brachial</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 6-8</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">8/10</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ CRUCIAL :</strong><br>
+                        Ne jamais verrouiller les coudes en bas si bras longs = risque de lésion tendineuse distale du biceps. Barre EZ = angle neutre pour le poignet.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">5️⃣ Curl marteau haltères alternés</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Brachial + Brachio-radial</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 10-12</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MERCREDI -->
+            <div id="mercredi" class="tab-content">
+                <div class="jour-title">🟡 Mercredi - BRAS + ÉPAISSEUR DOS</div>
+                <div class="jour-subtitle">SOLO - Isolation & Étirement (concentration maximale)</div>
+                <span class="badge solo">SOLO</span>
+
+                <div class="tips-section">
+                    <div class="tips-title">🎯 Objectif Mercredi</div>
+                    <ul>
+                        <li><strong>Prioriser les bras</strong> : Biceps (chef long + court) et Brachial</li>
+                        <li><strong>Triceps spécialisé</strong> : Longue portion = étirement maximal (extension nuque)</li>
+                        <li><strong>Dos épaisseur</strong> : Rowing + Pull-over pour la dimension antéro-postérieure</li>
+                        <li><strong>Concentration totale</strong> : Tempo strict, pas de rushes. Travail en solitaire = idéal.</li>
+                    </ul>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">1️⃣ Curl incliné haltères 45° (unilatéral) + <span style="color: #e74c3c;">REPS PARTIELLES</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 0.9em;">Chef LONG biceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 10-12</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-2-2-1 (Accent sur l'étirement) :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">2s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">1s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>🏆 L'EXERCICE SIGNATURE DELAVIER :</strong><br>
+                        Bras EN ARRIÈRE du tronc = la longue portion remonte jusqu'à l'épaule = étirement unique impossible ailleurs. Ne pas décoller l'épaule du banc. <strong>REPS PARTIELLES en fin de série :</strong> 5-6 reps en amplitude inférieure après l'échec concentrique complet.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">2️⃣ Curl pupitre barre EZ (strict)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Chef COURT biceps (pic)</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 10-12</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-1-2-2 (Accent sur la contraction) :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">1s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">2s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>🏆 Points Clés :</strong><br>
+                        Coudes EN AVANT = chef long hors tension → isolation pure du chef court. Contraction isométrique 2 sec en haut = maximise le recrutement du chef court.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">3️⃣ Curl marteau câble bas (assis) + <span style="color: #e74c3c;">SÉRIE DÉGRESSIVE</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Brachial + Brachio-radial</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <strong>🏆 Points Clés :</strong><br>
+                        Prise NEUTRE OBLIGATOIRE = activation du brachial (le fléchisseur pur). Câble = tension continue contrairement aux haltères qui déchargent en bas. <strong>DROP SET sur la 3e série :</strong> -20% charge, 6-8 reps en plus.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">4️⃣ Extension nuque haltère (2 mains, debout) + <span style="color: #e74c3c;">REPS PARTIELLES</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Longue portion triceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 10-12</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 3-2-2-1 :</strong><br>
+                        <span class="tempo-phase phase-excentrique">3s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">2s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">1s Pause Haute</span>
+                    </div>
+                    <div class="notes-section">
+                        <strong>🏆 L'EXERCICE #1 POUR LA MASSE TRICEPS :</strong><br>
+                        La longue portion CROISE l'épaule → elle n'est vraiment étirée que bras au-dessus de la tête. C'est LE meilleur exercice pour faire gonfler les bras. <strong>REPS PARTIELLES en fin de série :</strong> position basse, amplitude réduite, 5-6 reps.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">5️⃣ Extension poulie haute corde (un bras)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Chef latéral + médial triceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">6️⃣ Rowing à un bras haltère (appui genou)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand dorsal épaisseur</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 10-12</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">7️⃣ Pull-over câble bas (bras tendus)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand dorsal + Grand dentelé</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JEUDI -->
+            <div id="jeudi" class="tab-content">
+                <div class="jour-title">🟢 Jeudi - LEGS (Jambes)</div>
+                <div class="jour-subtitle">Avec collègues - Quadriceps, Ischios, Mollets</div>
+                <span class="badge groupe">GROUPE</span>
+
+                <div class="tips-section">
+                    <div class="tips-title">💡 Focus Jeudi</div>
+                    <ul>
+                        <li><strong>Force en premier :</strong> Squat heavy + Leg Press</li>
+                        <li><strong>Volume hypertrophie :</strong> Fentes, Leg Curl, Leg Extension</li>
+                        <li><strong>Mollets :</strong> Travail en 15-20 reps (fibres lentes + courtes)</li>
+                        <li><strong>Durée séance :</strong> ~60-75 min avec repos adéquats</li>
+                    </ul>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">1️⃣ Squat barre haute</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Quadriceps, Fessiers, Ischios</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 5-6</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">8-9/10</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ SÉCURITÉ PRIORITAIRE :</strong><br>
+                        Genoux dans l'axe des orteils, jamais de valgus. Si fémurs longs = inclinaison tronc normale. Descente jusqu'au parallèle minimum.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">2️⃣ Leg press</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Quadriceps (vaste médial VMO)</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 10-12</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">8/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">3️⃣ Fentes marchées haltères</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Quadriceps + Fessiers + Ischios</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12/côté</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">4️⃣ Leg curl couché + <span style="color: #e74c3c;">SÉRIE DÉGRESSIVE</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Ischio-jambiers (chef long + court)</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">5️⃣ Leg extension (arc partiel 40-80°) + <span style="color: #e74c3c;">REPS PARTIELLES</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Vaste médial (VMO)</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 15-20</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">6-7/10</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ PROTECTION TENDINEUSE :</strong><br>
+                        Éviter l'extension COMPLÈTE répétée = stress fémoro-patellaire. Travail en arc partiel (40-80°) pour protéger le tendon rotulien. Contraction isométrique 2 sec.
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">6️⃣ Mollets debout machine (full ROM)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Gastrocnémiens</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 15-20</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">7️⃣ Mollets assis</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Soléaire</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 15-20</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VENDREDI -->
+            <div id="vendredi" class="tab-content">
+                <div class="jour-title">🟠 Vendredi - UPPER BODY SCULPT</div>
+                <div class="jour-subtitle">SOLO - Largeur Dos + Détails Bras (Brachial/Longue portion)</div>
+                <span class="badge solo">SOLO</span>
+
+                <div class="tips-section">
+                    <div class="tips-title">🎯 Objectif Vendredi</div>
+                    <ul>
+                        <li><strong>Largeur du dos</strong> : Tractions supination + Pull-over</li>
+                        <li><strong>Deltoïde postérieur</strong> : Oiseau haltères (pose importante)</li>
+                        <li><strong>Détails des bras</strong> : Brachial (épaisseur face) + Longue portion biceps</li>
+                        <li><strong>Volume modéré</strong> : 8 exercices, reps plus hautes, focus qualité vs poids</li>
+                    </ul>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">1️⃣ Tractions supination prise serrée</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand dorsal (largeur), Biceps chef long</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 8-10</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7-8/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">2️⃣ Tirage horizontal câble prise neutre serrée</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand dorsal épaisseur + Rhomboïdes</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">3️⃣ Pull-over haltère (banc plat)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Grand dorsal + Grand dentelé + Longue portion triceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                    <div class="tempo-visual">
+                        <strong>TEMPO 4-1-2-0 (Excentrique TRÈS prolongé) :</strong><br>
+                        <span class="tempo-phase phase-excentrique">4s Excentrique</span>
+                        <span class="tempo-phase phase-pause-basse">1s Pause Basse</span>
+                        <span class="tempo-phase phase-concentrique">2s Concentrique</span>
+                        <span class="tempo-phase phase-pause-haute">0s Pause Haute</span>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">4️⃣ Oiseau haltères + <span style="color: #e74c3c;">SÉRIE DÉGRESSIVE</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Deltoïde postérieur + Rhomboïdes</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">4 × 15-20</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">6-7/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">5️⃣ Curl incliné câble bas (unilatéral) + <span style="color: #e74c3c;">REPS PARTIELLES</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 0.9em;">Chef long biceps + Brachial</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">6️⃣ Curl marteau câble (unilatéral)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Brachial + Brachio-radial</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <strong>🏆 LE MUSCLE DE L'ÉPAISSEUR :</strong><br>
+                        Le brachial est responsable de l'épaisseur du bras VU DE FACE. Prise neutre OBLIGATOIRE. C'est celui qui fait la différence entre un bras "plat" et un bras "bombé".
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">7️⃣ Extension nuque câble (un bras, debout) + <span style="color: #e74c3c;">REPS PARTIELLES</span></div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Longue portion triceps</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 12-15</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">7/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercice-card">
+                    <div class="exercice-name">8️⃣ Élévation latérale câble (unilatérale)</div>
+                    <div class="exercice-grid">
+                        <div class="param-box">
+                            <div class="param-label">Muscles Cibles</div>
+                            <div class="param-value" style="font-size: 1em;">Deltoïde médial (faisceau acromial)</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Séries × Reps</div>
+                            <div class="param-value">3 × 15-20</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">RPE</div>
+                            <div class="param-value">6-7/10</div>
+                        </div>
+                    </div>
+                    <div class="notes-section">
+                        <strong>⚠️ SÉCURITÉ ÉPAULE :</strong><br>
+                        Ne pas monter au-dessus de l'horizontale = risque sous-acromial. Initier avec le coude, pas la main.
+                    </div>
+                </div>
+            </div>
+
+            <!-- NUTRITION -->
+            <div id="nutrition" class="tab-content">
+                <div class="jour-title">🥗 Nutrition - Recomposition Corporelle</div>
+                <div class="jour-subtitle">Maintenance calorique + Carb Cycling (80 kg, ajuste selon ton poids)</div>
+
+                <div class="nutrition-section">
+                    <div class="nutrition-title">📊 Calcul des Besoins</div>
+                    <p style="margin-bottom: 20px; color: #2c3e50;">
+                        <strong>Formule Mifflin-St Jeor (BMR) :</strong> (10 × 80) + (6,25 × 178) - (5 × 24) + 5 = <strong>1 798 kcal</strong><br>
+                        <strong>TDEE (Actif, ×1,55) :</strong> <strong>2 787 kcal</strong> ≈ <strong>2 800 kcal maintenance</strong>
+                    </p>
+
+                    <div class="nutrition-grid">
+                        <div class="nutrition-box">
+                            <div class="nutrition-label">Apport Calorique</div>
+                            <div class="nutrition-value">2 800</div>
+                            <div class="nutrition-label" style="font-size: 0.8em;">kcal/jour</div>
+                        </div>
+                        <div class="nutrition-box">
+                            <div class="nutrition-label">Protéines</div>
+                            <div class="nutrition-value">176</div>
+                            <div class="nutrition-label" style="font-size: 0.8em;">g (2.2g/kg)</div>
+                        </div>
+                        <div class="nutrition-box">
+                            <div class="nutrition-label">Lipides</div>
+                            <div class="nutrition-value">72</div>
+                            <div class="nutrition-label" style="font-size: 0.8em;">g (0.9g/kg)</div>
+                        </div>
+                        <div class="nutrition-box">
+                            <div class="nutrition-label">Glucides</div>
+                            <div class="nutrition-value">Variable</div>
+                            <div class="nutrition-label" style="font-size: 0.8em;">Carb Cycling</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nutrition-section">
+                    <div class="nutrition-title">🔄 Stratégie Carb Cycling</div>
+
+                    <table class="carb-cycle-table">
+                        <thead>
+                            <tr>
+                                <th>Jour</th>
+                                <th>Type</th>
+                                <th>Calories Totales</th>
+                                <th>Glucides</th>
+                                <th>Objectif</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Lundi (Push)</strong></td>
+                                <td class="carb-high">HIGH CARB 🔴</td>
+                                <td>~3 000 kcal</td>
+                                <td><strong>~410 g</strong></td>
+                                <td>Reconstituer glycogène, performance</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mardi (Pull)</strong></td>
+                                <td class="carb-high">HIGH CARB 🔴</td>
+                                <td>~3 000 kcal</td>
+                                <td><strong>~410 g</strong></td>
+                                <td>Séance lourde dos/biceps</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mercredi (Bras)</strong></td>
+                                <td class="carb-medium">MEDIUM CARB 🟡</td>
+                                <td>~2 700 kcal</td>
+                                <td><strong>~235 g</strong></td>
+                                <td>Séance plus courte, isolation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jeudi (Legs)</strong></td>
+                                <td class="carb-high">HIGH CARB 🔴</td>
+                                <td>~3 000 kcal</td>
+                                <td><strong>~410 g</strong></td>
+                                <td>Legs = dépense calorique maximale</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vendredi (Sculpt)</strong></td>
+                                <td class="carb-medium">MEDIUM CARB 🟡</td>
+                                <td>~2 700 kcal</td>
+                                <td><strong>~235 g</strong></td>
+                                <td>Séance modérée solo</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Samedi (Repos)</strong></td>
+                                <td class="carb-low">LOW CARB 🔵</td>
+                                <td>~2 100 kcal</td>
+                                <td><strong>~185 g</strong></td>
+                                <td>Favoriser oxydation des graisses</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dimanche (Repos)</strong></td>
+                                <td class="carb-low">LOW CARB 🔵</td>
+                                <td>~2 100 kcal</td>
+                                <td><strong>~185 g</strong></td>
+                                <td>Récupération + lipolyse</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p style="margin-top: 20px; color: #2c3e50;">
+                        <strong>📈 Moyenne hebdomadaire :</strong> ~2 800 kcal/jour = <strong>maintenance nette</strong> → conditions idéales de recomposition corporelle (gain muscle + perte gras simultanés).
+                    </p>
+                </div>
+
+                <div class="nutrition-section">
+                    <div class="nutrition-title">⏰ Timing des Glucides</div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; color: #2c3e50; line-height: 1.8;">
+                        <p><strong>✅ Avant l'entraînement (1h30) :</strong> 40–60 g glucides complexes (riz, flocons d'avoine)</p>
+                        <p><strong>✅ Après l'entraînement (30 min) :</strong> 60–80 g glucides rapides (riz blanc, banane, maltodextrine)</p>
+                        <p><strong>✅ Soir (jours High Carb) :</strong> glucides restants via féculents (patate douce, pâtes)</p>
+                        <p><strong>✅ Jours Low Carb :</strong> lipides légèrement augmentés (avocats, oléagineux) pour compenser l'énergie</p>
+                    </div>
+                </div>
+
+                <div class="nutrition-section">
+                    <div class="nutrition-title">🍽️ Exemple de Journée HIGH CARB (Lundi/Mardi/Jeudi)</div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; color: #2c3e50; line-height: 1.8;">
+                        <p><strong>Petit-déjeuner :</strong> 3 œufs entiers + 50g flocons d'avoine + 1 pomme</p>
+                        <p><strong>Collation matin :</strong> 30g whey + 60g riz blanc + 10g huile coco</p>
+                        <p><strong>Déjeuner :</strong> 200g poulet + 200g riz blanc + brocoli</p>
+                        <p><strong>Pré-entraînement (-1h30) :</strong> 50g maltodextrine + 20g whey</p>
+                        <p><strong>Post-entraînement (+30min) :</strong> 80g riz blanc + 30g whey + banane</p>
+                        <p><strong>Dîner :</strong> 200g bœuf maigre + 300g patate douce + légumes</p>
+                        <p><strong>Avant coucher :</strong> 30g caséine ou fromage blanc</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GUIDE & ASTUCES -->
+            <div id="tips" class="tab-content">
+                <div class="jour-title">📚 Guide Complet & Astuces</div>
+
+                <div class="tips-section">
+                    <div class="tips-title">🏆 Principes Delavier/Gundill Appliqués</div>
+                    <ul>
+                        <li><strong>Tension d'étirement :</strong> Chaque muscle doit être travaillé dans sa position d'étirement maximum. Ex : curl incliné à 45° = chef long du biceps en étirement complet, inaccessible ailleurs.</li>
+                        <li><strong>Morpho-anatomie du biceps :</strong> 
+                            <ul style="margin-left: 20px; margin-top: 10px;">
+                                <li><strong>Chef long (longue portion) :</strong> s'insère sur le tubercule supra-glénoïdien → croise l'épaule → curl incliné 45° (ÉTIREMENT), tirage supination (CO-ACTIVATION)</li>
+                                <li><strong>Chef court (courte portion) :</strong> s'insère sur le processus coracoïde → curl pupitre (ISOLATION), coudes en avant = pic maximal</li>
+                                <li><strong>Brachial :</strong> le seul fléchisseur pur indépendant de la supination → prise neutre OBLIGATOIRE (curl marteau, haltères) → responsable de l'ÉPAISSEUR du bras vu de face</li>
+                            </ul>
+                        </li>
+                        <li><strong>Triceps — Longue portion :</strong> croise l'épaule → maximisée bras au-dessus de la tête (extension nuque) = l'exercice #1 pour la masse triceps.</li>
+                        <li><strong>Tempo 4 chiffres (Excentrique-Pause-Concentrique-Pause) :</strong> 
+                            <ul style="margin-left: 20px; margin-top: 10px;">
+                                <li><strong>Excentrique 3-4 sec :</strong> stress mécanique maximal, tension d'étirement, dommage musculaire = hypertrophie</li>
+                                <li><strong>Pause 1-2 sec en bas :</strong> supprime le réflexe myotatique, force le muscle à travailler plus dur</li>
+                                <li><strong>Concentrique 2 sec :</strong> pas d'explosivité excessive, contrôle total du mouvement</li>
+                                <li><strong>Pause 0-1 sec en haut :</strong> selon les besoins (pic de contraction)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Prévention des blessures :</strong> Ne jamais verrouiller les coudes aux curls barre ou DC si longiligne. ⚠️ Risque de lésion tendineuse distale du biceps. Stop à ~95% d'extension.</li>
+                    </ul>
+                </div>
+
+                <div class="tips-section">
+                    <div class="tips-title">🔥 Techniques d'Intensification</div>
+                    <ul>
+                        <li><strong>Série Dégressive (Drop Set) :</strong> Atteindre l'échec musculaire, puis réduire la charge de -20%, enchaîner 6-8 reps sans pause. Génère un stress métabolique intense = hypertrophie rapide. Utilisé sur : extension triceps, curl marteau câble, leg curl, oiseau, leg extension.</li>
+                        <li><strong>Reps Partielles en Position Étirée :</strong> Après l'échec concentrique complet, enchaîner 5-6 reps en amplitude inférieure (position basse). Maintient la tension d'étirement = hypertrophie excentrique maximale. Utilisé sur : curl incliné, extension nuque, leg extension, curl câble.</li>
+                        <li><strong>Contraction Isométrique (2-3 sec au sommet) :</strong> Pause forcée en contraction maximale → recrute plus d'unités motrices, augmente le pump sanguin. Utilisé sur : rowing barre, tirage câble, curl concentration.</li>
+                        <li><strong>Superset Antagoniste :</strong> Curl (agoniste) + extension triceps (antagoniste) → maintient le flux sanguin, permet une récupération active sans fatigue du biceps entre les séries.</li>
+                    </ul>
+                </div>
+
+                <div class="tips-section">
+                    <div class="tips-title">📈 Progression & Deload</div>
+                    <ul>
+                        <li><strong>Mésocycle 6 semaines :</strong>
+                            <ul style="margin-left: 20px; margin-top: 10px;">
+                                <li><strong>Sem 1-2 :</strong> 10-12 reps, 65-70% 1RM → apprentissage moteur, connexion neuro-musculaire</li>
+                                <li><strong>Sem 3-4 :</strong> 8-10 reps, 70-75% 1RM → montée progressive en charge</li>
+                                <li><strong>Sem 5 :</strong> 12-15 reps, 60-65% 1RM → surcharge métabolique, volume maximal (Déload progressif)</li>
+                                <li><strong>Sem 6 :</strong> -50% volume, 60% 1RM → récupération active, supercompensation</li>
+                            </ul>
+                        </li>
+                        <li><strong>Gains attendus :</strong> +1-2 kg de muscle sec par mois en recomposition (si nutrition respectée).</li>
+                    </ul>
+                </div>
+
+                <div class="tips-section">
+                    <div class="tips-title">⚠️ Points Critiques de Sécurité</div>
+                    <ul>
+                        <li><strong>Biceps :</strong> Ne pas verrouiller coudes en bas aux curls barre. Stop à ~95% extension = protection tendon biceps distal.</li>
+                        <li><strong>Triceps :</strong> Extension nuque = amplitude maximale obligatoire pour étirer la longue portion. Mais attention à l'hyperextension cervicale. Garder la nuque neutre.</li>
+                        <li><strong>Épaules :</strong> Développé militaire = barre DEVANT, jamais derrière la nuque (stress cervical). Élévations latérales max à l'horizontale (risque sous-acromial).</li>
+                        <li><strong>Genoux :</strong> Leg extension = arc partiel (40-80°) pour protéger le tendon rotulien. Jamais extension complète répétée = stress fémoro-patellaire.</li>
+                        <li><strong>Dos :</strong> Squat + Rowing = engagement du core obligatoire. Éviter l'hyperextension lombaire en tractions lestées.</li>
+                    </ul>
+                </div>
+
+                <div class="tips-section">
+                    <div class="tips-title">✅ Checklist Avant Chaque Séance</div>
+                    <ul>
+                        <li>☐ Échauffement 5-10 min (cardio léger + mobilité articulaire)</li>
+                        <li>☐ Série d'échauffement à ~50% de la charge de travail (8-10 reps)</li>
+                        <li>☐ Hydratation adéquate (500ml eau à minéraux avant l'entraînement)</li>
+                        <li>☐ Repas pré-entraînement 1h30 avant (glucides complexes + protéines)</li>
+                        <li>☐ Vérifier les charges pour respecter la zone RPE ciblée</li>
+                        <li>☐ Chronomètre pour contrôler le tempo des reps</li>
+                        <li>☐ Carnet d'entraînement pour tracker les progressions</li>
+                        <li>☐ Étirement post-entraînement 5-10 min</li>
+                        <li>☐ Repas post-entraînement dans les 30-60 min (glucides rapides + protéines)</li>
+                    </ul>
+                </div>
+
+                <div class="tips-section">
+                    <div class="tips-title">🎯 Microcycles Recommandés</div>
+                    <ul>
+                        <li><strong>Cycle 1 (Sem 1-2) :</strong> Adaptation, apprentissage des exercices, connexion neuro-musculaire. Focus : FORME PARFAITE, même si charges légères.</li>
+                        <li><strong>Cycle 2 (Sem 3-4) :</strong> Montée progressive en charge. Augmenter 2-5% par semaine sur les exos polyarticulaires (DC, Squat, Rowing).</li>
+                        <li><strong>Cycle 3 (Sem 5) :</strong> Pic de volume (12-15 reps). C'est ici qu'on accumule le plus de séries total. Stress métabolique maximal.</li>
+                        <li><strong>Cycle 4 (Sem 6) :</strong> Récupération active (-50% volume). Les muscles supercompensent → croissance maximale.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container-footer">
+            <p>💪 Programme Délavier/Gundill - Recomposition Corporelle 5 jours</p>
+            <p>🎯 Gain muscle maximal + Perte de gras | 📊 Suivi nutrition Carb Cycling | ⏱️ Tempo strict | 🏆 Morpho-anatomie</p>
+            <p style="margin-top: 15px; opacity: 0.7;">Adapte selon ton morphotype et tes capacités. Consulte un coach/médecin avant de commencer.</p>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tabbuttons;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tabbuttons = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Initialiser avec la date du jour
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                if (input) input.value = today;
+            });
+        });
+    </script>
+</body>
+</html>
